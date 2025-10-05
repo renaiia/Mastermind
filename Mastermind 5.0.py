@@ -9,7 +9,7 @@ The player gets feedback via a red or white pegs. Red = right collour and place,
 I have added comments to explain the code 
 I have chosen to sepearte all user input and feedsback from the game logic allow for expansion later if i want to add a GUI or AI player.
 """
-
+# give function """ """ dockstings
 class MyMastermind:
     colours = ["pink","orange","yellow","green","blue","purple","white","black"]
 
@@ -115,7 +115,6 @@ class MyMastermind:
     def get_guess(self):   # Gets user guess and cheks if user input is valid
         self.ui_responses("colours")
         guess = input("Place your guess here: ").split()
-        # col = self.colours[0:self.settings["colours"]]
         pegs = self.settings["pegs"] 
 
         if guess[0] == "quit":
