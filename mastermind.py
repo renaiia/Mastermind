@@ -1,11 +1,11 @@
 import random
 
-class MyMastermind:
+class MyMastermind():
     colors = ["pink","orange","yellow","green","blue","purple","white","black"]
 
-    def __init__(self):   # initializes the game variables and saves the guesses
+    def __init__(self, settings=None):   # initializes the game variables and saves the guesses
         self.previous_guesses = []
-        self.settings = self.implement_settings()
+        self.settings = self.implement_settings(settings)
         self.code = self.generate_code()
 
     def start_game(self):   # starts the game
@@ -62,12 +62,9 @@ class MyMastermind:
 
         return settings
         
-    def generate_code(self, code=None):
-        """ Generates the code of the game, allows for predefined code for testing purposes, return the code as a list"""
+    def generate_code(self):
+        """ Generates the code of the game, return the code as a list"""
 
-        if code != None:
-            return code
-        
         if self.settings["dupes"] == "yes":
             code = random.choices(self.colors[0:self.settings["colors"]], k=self.settings["pegs"])
         elif self.settings["dupes"] == "no":
@@ -78,8 +75,8 @@ class MyMastermind:
     def evaluate_guess(self, guess):   # compares guess against the code
         """Compares the guess against the code, returns the evaluation as a tuple of 2 integers. 1st white, 2nd red"""
 
-        white = []
         red = []
+        white = []
         code_no_red = []
         guess_no_red = [] 
         
@@ -94,9 +91,9 @@ class MyMastermind:
             if g in code_no_red:
                 white.append(g), code_no_red.remove(g)
 
-        return len(white), len(red)   # return the number of white and red pegs
+        return len(red), len(white)   # return the number of white and red pegs
 
-    def ui_responses(self, options, white = None, red = None):
+    def ui_responses(self, options, red = None, white = None):
         """ handles all user feedback via print statements"""
 
         col = ', '.join(self.colors[0:self.settings["colors"]])
@@ -117,7 +114,7 @@ class MyMastermind:
             print(f"Guess must be {pegs} of these: {col}")
         elif options == "history":
             for guess in self.previous_guesses:
-                print (f"Guess: {guess[0]} White: {guess[1][0]} Red: {guess[1][1]}")
+                print (f"Guess: {guess[0]} Red: {guess[1][0]} White: {guess[1][1]}")
 
     def guess_decoder(self, guess):   # i choose to to it like this because i want to make a gui later and this will be unnecessary   
         """Takes guess and checks if it is an abbreviation, decodes it and returns the unabbreviated guess as a list"""
@@ -141,6 +138,8 @@ class MyMastermind:
                     decoded.append(abr_col[g])
                 except: 
                     decoded.append(g)
+            else: 
+                decoded.append(g)
         
         return decoded
 
@@ -150,19 +149,19 @@ class MyMastermind:
         pegs = self.settings["pegs"] 
 
         while len(guess)!= pegs:
-            if guess == "quit" or guess == "history":
+            if guess[0] == "quit" or guess[0] == "history":
                 return guess
-            guess = input(f"Guess must contain {pegs} colors: ").split()
+            guess = input(f"Guess must contain {pegs} colors: ").strip().lower().split()
         
         return guess
     
     def check_colors(self, guess):
         """ Check if guess contains allowed colors, if it does not ask for new guess and calls the check length and decoder functions, before checking again. Returns a valid guess as a list """
         while any(g not in self.colors[0:self.settings["colors"]] for g in guess):   # Makes sure guess only contains possible colors
-            if guess == "quit" or guess == "history":
+            if guess[0] == "quit" or guess[0] == "history":
                 return guess
             self.ui_responses("colors error")
-            guess = input("Place your guess here: ").split()
+            guess = input("Place your guess here: ").strip().lower().split()
             guess = self.guess_decoder(guess) 
             guess = self.check_length(guess)
         
@@ -172,7 +171,7 @@ class MyMastermind:
         """Gets user guess and checks if user input is valid, return the guess as a list"""
         # change name and validate 
         self.ui_responses("colors")
-        guess = input("Place your guess here: ").split()
+        guess = input("Place your guess here: ").strip().lower().split()
 
         if guess[0] == "quit":
             return guess
@@ -189,15 +188,15 @@ class MyMastermind:
     def get_settings(self):
         """Ask for game difficulty and if duplicate colors are allowed. Returns two values. 1st the difficulty, 2nd if dupes allowed"""
 
-        difficulty = input("Choose your difficulty?: ")
+        difficulty = input("Choose your difficulty?: ").strip().lower()
 
         while difficulty != "easy" and difficulty != "medium" and difficulty != "hard" and difficulty != "expert":
-            difficulty = input("Please enter easy, medium, hard or expert: ")
+            difficulty = input("Please enter easy, medium, hard or expert: ").strip().lower()
         
-        dupes = input("Allow duplicate colors?: ")
+        dupes = input("Allow duplicate colors?: ").strip().lower()
 
-        while dupes!= "yes" and dupes != "no":
-            dupes = input("Please enter yes or no: ")
+        while dupes != "yes" and dupes != "no":
+            dupes = input("Please enter yes or no: ").strip().lower()
 
         return difficulty, dupes
     

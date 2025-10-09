@@ -3,20 +3,16 @@ import pytest
 from mastermind import MyMastermind
 from unittest.mock import patch
 
-"""
-I am testing my functions here
-""" 
 @pytest.mark.parametrize("code, guess, expected_result, difficulty", [
-    ("blue green pink orange", "pink green orange purple", (1, 1), "easy"),
-    ("blue green pink orange", "green green green purple", (1, 0), "easy"),
+    (["blue","green","pink","orange"], ["pink","green","orange","purple"], (1, 2), ("easy", "no")),
+    (["blue","green","pink","orange"], ["green","green","green","purple"], (1, 0), ("easy", "yes")),
 ])
 def test_evaluate_guess(code, guess, expected_result, difficulty):
     """Checks if logic behind the game is correct, does the game give the correct feedback when it comes to position and colour
     expected_result = tuple of 2 integers
     """
-    game = MyMastermind()
-    game.implement_settings(difficulty)
-    game.generate_code(code)
+    game = MyMastermind(difficulty)
+    game.code = code
     evaluation = game.evaluate_guess(guess)
 
     assert evaluation == expected_result, f"{evaluation} should be {expected_result}"
