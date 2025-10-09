@@ -1,24 +1,36 @@
 # Mastermind
-A text based mastermind game
+A text based Python mastermind game
 
-Takes user input 
-The player has to guess a sequence of 4 colors form a list of 6 in easy mode.
-The player can choose if duplicate colors are allowed and between 4 difficulties.
-The player gets feedback via a red or white pegs. Red = right color and place, White = right color but wrong place.
+## Description
+This is a text-based Mastermind game where the player has to guess the hidden color code.
 
-I have added comments to explain the code 
-I have chosen to separate all user input and feedback from the game logic allow for expansion later if i want to add a GUI or AI player.
-"""
-It sets up a Mastermind game where a secret color code is generated based on difficulty and whether duplicate colors are allowed.
+The project demonstrates:
+- Python OOP (class-based design)
+- Separation of game logic and user interface
+- Unit testing with pytest
+- Input validation and error handling
 
-The player guesses the color code and receives feedback in terms of:
+## Features
+- Four difficulty levels: Easy, Medium, Hard, Expert
+- Option to allow or disallow duplicate colors for each difficulty
+- Feedback via "red" and "white" pegs:
+    - Red = correct color in correct position
+    - White = correct color in wrong position
+- Tracks guess history, accessed by typing "history"
+- Abbreviations supported for colors (first 2 letters, except "black" uses 3, e.g., pi for pink)
+- Allows manual quitting by typing "quit"
 
-Red pegs = correct color in the correct position
+## Example Gameplay
+Choose your difficulty?: easy
+Allow duplicate colors?: no
+Available colors: pink, orange, yellow, green, blue, purple
+Place your guess here: pi or ye gr
+White:1 Red:2
 
-White pegs = correct color in the wrong position
+## Testing 
+Unit tests are included using pytest.
 
-It supports multiple difficulties, each affecting how many colors and pegs are used.
-
-It allows commands like "quit" to exit and "history" to see previous guesses.
-
-It accepts abbreviated color inputs and decodes them to full names.
+## Future improvements
+- Add a cap to number of turns 
+- Configurable color sets
+- Graphical user interface (GUI) version
