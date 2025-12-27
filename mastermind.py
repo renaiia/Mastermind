@@ -27,7 +27,7 @@ class MyMastermind():
         Returns:
             settings (dict): Contains difficulty(str), dupes(str), colors(int), pegs(int).
         """
-        if settings == None:   # enables testing
+        if settings is None:   # enables testing
             return settings
 
         if settings[0] == "easy":
@@ -58,7 +58,7 @@ class MyMastermind():
         Returns:
             code (list[str]): Generated code.
         """
-        if self.settings == None:   # enables testing
+        if self.settings is None:   # enables testing
             return None 
 
         if self.settings["dupes"] == "yes":
@@ -95,15 +95,15 @@ class MyMastermind():
 
         return len(red), len(white)
 
-def start_game(game):    # No function for now
+def start_game(game, ui_config):
     """Starts the game.
     
     Args:
         game (MyMastermind): Instance of MyMastermind class.
     """
-    run_game(game)
+    run_game(game, ui_config)
 
-def run_game(game):
+def run_game(game, ui_config):
     """Runs the game loop, until correct guess or manual quit. Allows access to previous guesses.
     
     Args:
@@ -112,46 +112,45 @@ def run_game(game):
     guess = " "
         
     while guess != game.code and guess[0] != "quit":   # runs the game
-        guess = get_guess(game) 
+        guess = get_guess(game, ui_config) 
 
         if guess[0] == "history":   # shows the player their previous guesses
-            ui_responses(game, "history")
-            guess = get_guess(game)
+            ui_responses(game, "history", ui_config)
+            guess = get_guess(game, ui_config)
         elif guess[0] == "quit":   # enables the player to quit
-            ui_responses(game, "quit")
+            ui_responses(game, "quit", ui_config)
         elif guess == game.code:   # checks if the guess is correct
-            ui_responses(game,"win")
+            ui_responses(game,"win", ui_config)
         else:
             pegs = game.evaluate_guess(guess)   # gets number of white and red pegs
             game.previous_guesses.append((guess, pegs))
-            ui_responses(game, "eval", pegs[0], pegs[1])
+            ui_responses(game, "eval", ui_config, pegs[0], pegs[1])
 
 """UI helpers"""
 
 abr_col = {
-        "pi": ("pink", "1;35"),
-        "or": ("orange", "1;31"),
-        "ye": ("yellow", "1;33"),
-        "gr": ("green", "0;32"),
-        "cy": ("cyan", "1;36"),
-        "pu": ("purple", "0;35"),
-        "wh": ("white", "0;37"),
-        "bl": ("black", "0;30"),
-        "re": ("red", "0;31"),
+        "pi": ("pink"),
+        "or": ("orange"),
+        "ye": ("yellow"),
+        "gr": ("green"),
+        "cy": ("cyan"),
+        "pu": ("purple"),
+        "wh": ("white"),
+        "bl": ("black"),
+        "re": ("red"),
         }
 
 col_map = {
     "pink": "1;35",
-    "orange": "1;31",
+    "orange": "31",
     "yellow": "1;33",
-    "green": "0;32",
+    "green": "1;32",
     "cyan": "1;36",
-    "purple": "0;35",
-    "white": "0;37",
-    "black": "0;30",
-    "red": "0;31"
+    "purple": "35",
+    "white": "1;37",
+    "black": "1;30",
+    "red": "1;31"
 }
-
 
 def guess_decoder(game, guess):
     """Checks if guess is an abbreviation and decodes if it is.
@@ -159,17 +158,6 @@ def guess_decoder(game, guess):
     Returns:
         decoded (list[str]): Unabbreviated guess.
     """
-    abr_col = {
-        "pi": "pink",
-        "or": "orange",
-        "ye": "yellow",
-        "gr": "green",
-        "bl": "blue",
-        "pu": "purple",
-        "wh": "white",
-        "bla": "black"
-        }
-    
     decoded = []
 
     for g in guess:
@@ -184,7 +172,7 @@ def guess_decoder(game, guess):
     return decoded
 
 """UI layer"""
-def ui_responses(game, options, red = None, white = None):
+def ui_responses(game, options, ui_config, red = None, white = None):
     """ Handles all user feedback via print statements.
 
     Args:
@@ -192,32 +180,31 @@ def ui_responses(game, options, red = None, white = None):
         red (int): Number of red pegs.
         white (int): Number of white pegs.
         game (MyMastermind): Instance of MyMastermind class.
-    """
-    col = ', '.join(game.colors[0:game.settings["colors"]])
-    pegs = game.settings['pegs']
-        
-
+    """ 
     if options == "win":
-        print (f"Correct! The code was: {game.code}")
+        print (f"Correct! The code was: {add_colors(game.code, ui_config)}")
         print (f"You did it in {len(game.previous_guesses)} attempts")
     elif options == "quit": 
-        print (f"The code was: {game.code}")
+        print (f"The code was: {add_colors(game.code, ui_config)}")
     elif options == "eval":
-        print (f"White:{white} Red:{red}")
-        return (f"White:{white} Red:{red}")
-    elif options == "colors":
-        print(f"Available colors: {col}")
+        col_red = add_colors(("red", "white"), ui_config)
+        print (f"{col_red[0]}:{red} {col_red[1]}:{white}")
+        return (f"{col_red[0]}:{red} {col_red[1]}:{white}")
+    elif options == "colors":   # choose to not add colored text here
+        print(f"Available colors: {', '.join(game.colors[:game.settings['colors']])}")
     elif options == "colors error":
-        print(f"Guess must be {pegs} of these: {col}")
+        print(f"Guess must be {game.settings['pegs']} of these: {', '.join(game.colors)}")
     elif options == "history":
+        count = 0
         for guess in game.previous_guesses:
-            print (f"Guess: {guess[0]} Red: {guess[1][0]} White: {guess[1][1]}")
+            count += 1
+            print (f"Guess {count}: {add_colors(guess[0], ui_config)} ⏐ {add_colors('red', ui_config)}: {guess[1][0]} {add_colors('white', ui_config)}: {guess[1][1]}")
 
-def get_settings():
-    """Ask for game difficulty and if duplicate colors are allowed. 
+def get_settings():   # sends to game logic
+    """Asks for game difficulty and if duplicate colors are allowed. 
 
     Returns:
-        tuple (int, int): Difficulty and dupes, e.g. ("easy", "yes").
+        tuple (str, str): Difficulty and dupes, e.g. ("easy", "yes").
         """
     difficulty = input("Choose your difficulty?: ").strip().lower()
 
@@ -231,7 +218,23 @@ def get_settings():
 
     return difficulty, dupes
 
-def get_guess(game):
+def get_ui_config():
+    """Asks if terminal colors should be used. 
+
+    Returns:
+        tuple (str): Difficulty and dupes, e.g. ("yes").
+        """
+    colors = input("Use colors in terminal?: ")
+    
+    while colors != "yes" and colors != "no":
+        colors = input("Please enter yes or no: ").strip().lower()
+    
+    if colors == "no":
+        colors = False
+
+    return colors
+
+def get_guess(game, ui_config):
     """ Get guess, calls check_length and guess_decoder, runs until guess only contains allowed colors.
 
     Args:
@@ -240,7 +243,7 @@ def get_guess(game):
     Returns: 
         guess (list): Valid guess
     """
-    ui_responses(game,"colors")
+    ui_responses(game,"colors", ui_config)
     guess = input("Place your guess here: ").strip().lower().split()
 
     pegs = game.settings["pegs"]
@@ -254,12 +257,38 @@ def get_guess(game):
             if all(g in game.colors[0:game.settings["colors"]] for g in guess):
                 return guess
             else:
-                ui_responses(game, "colors error")
+                ui_responses(game, "colors error", ui_config)
                 guess = input("Place your guess here: ").strip().lower().split()
         else: 
             guess = input(f"Guess must contain {pegs} colors: ").strip().lower().split()
-            
+
+def add_colors(text, enabled):
+    """Adds ANSI colors to text.
+
+    Args:
+        game (MyMastermind): A game instance.
+
+    Returns: 
+        Input but colored.
+    """
+    if enabled == False:
+        return text
+
+    colored_list = []
+
+    if type (text) == str:
+        return (f"\033[{col_map[text]}m{text}\033[0m")
+
+    for item in text:
+        colored_list.append(f"\033[{col_map[item]}m{item}\033[0m")
+    
+    if len (colored_list) > 2:
+        return " ".join(colored_list)
+        
+    return colored_list
+
 if __name__ == "__main__":   # connects ui and logic
     settings = get_settings()
+    ui_config = get_ui_config()
     game = MyMastermind(settings)
-    start_game(game)
+    start_game(game, ui_config)
