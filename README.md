@@ -17,20 +17,21 @@ The project demonstrates:
     - Red = correct color in correct position
     - White = correct color in wrong position
 - Tracks guess history, accessed by typing "history"
-- Abbreviations supported for colors (first 2 letters, except "black" uses 3, e.g., pi for pink)
+- Abbreviations supported for colors (first 2 letters, e.g., pi for pink)
 - Allows manual quitting by typing "quit"
+- Terminal colors are implemented as an optional UI feature
 
 ## Example Gameplay
-Choose your difficulty?: easy
-Allow duplicate colors?: no
-Available colors: pink, orange, yellow, green, blue, purple
-Place your guess here: pi or ye gr
-White:1 Red:2
+Choose your difficulty?: easy <br>
+Allow duplicate colors?: no <br>
+Available colors: pink, orange, yellow, green, blue, purple <br>
+Place your guess here: pi or ye gr <br>
+white:1 red:2
 
 ## Testing 
 Unit tests are included using pytest.
 
 ## Future improvements
-- Add a cap to number of turns 
-- Configurable color sets
+- Add a cap to number of turns
+- Ability to save and load games
 - Graphical user interface (GUI) version
