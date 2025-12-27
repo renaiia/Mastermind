@@ -1,7 +1,7 @@
 import random
 
 class MyMastermind():
-    colors = ["pink","orange","yellow","green","blue","purple","white","black"]
+    colors = ["pink","orange","yellow","green","cyan","purple","white","black"]
 
     def __init__(self, settings=None):
         """Initialize the game with the given settings.
@@ -95,7 +95,7 @@ class MyMastermind():
 
         return len(red), len(white)
 
-def start_game(game):
+def start_game(game):    # No function for now
     """Starts the game.
     
     Args:
@@ -127,6 +127,32 @@ def run_game(game):
             ui_responses(game, "eval", pegs[0], pegs[1])
 
 """UI helpers"""
+
+abr_col = {
+        "pi": ("pink", "1;35"),
+        "or": ("orange", "1;31"),
+        "ye": ("yellow", "1;33"),
+        "gr": ("green", "0;32"),
+        "cy": ("cyan", "1;36"),
+        "pu": ("purple", "0;35"),
+        "wh": ("white", "0;37"),
+        "bl": ("black", "0;30"),
+        "re": ("red", "0;31"),
+        }
+
+col_map = {
+    "pink": "1;35",
+    "orange": "1;31",
+    "yellow": "1;33",
+    "green": "0;32",
+    "cyan": "1;36",
+    "purple": "0;35",
+    "white": "0;37",
+    "black": "0;30",
+    "red": "0;31"
+}
+
+
 def guess_decoder(game, guess):
     """Checks if guess is an abbreviation and decodes if it is.
 
@@ -162,6 +188,7 @@ def ui_responses(game, options, red = None, white = None):
     """ Handles all user feedback via print statements.
 
     Args:
+        options (str): Decides which response to run.
         red (int): Number of red pegs.
         white (int): Number of white pegs.
         game (MyMastermind): Instance of MyMastermind class.
