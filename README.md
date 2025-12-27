@@ -26,7 +26,7 @@ Choose your difficulty?: easy <br>
 Allow duplicate colors?: no <br>
 Available colors: pink, orange, yellow, green, blue, purple <br>
 Place your guess here: pi or ye gr <br>
-white:1 red:2
+white: 1 red: 2
 
 ## Testing 
 Unit tests are included using pytest.
