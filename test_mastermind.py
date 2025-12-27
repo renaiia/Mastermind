@@ -1,13 +1,14 @@
 import pytest
-from mastermind import MyMastermind
+from mastermind import MyMastermind, get_settings, start_game
+from unittest.mock import patch
 
 @pytest.mark.parametrize("code, guess, expected_result", [
-    (["blue","blue","blue","blue"], ["blue","blue","blue","blue"], (4, 0)),
-    (["blue","blue","blue","blue"], ["pink","pink","pink","pink"], (0, 0)),
-    (["blue","green","pink","orange"], ["green","blue","orange","pink"], (0, 4)),
-    (["blue","green","pink","orange"], ["green","green","green","purple"], (1, 0)),
-    (["blue","blue","pink","orange"], ["yellow","pink","green","purple"], (0, 1)),
-    (["blue","green","pink","orange"], ["pink","green","orange","purple"], (1, 2)),
+    (["cyan","cyan","cyan","cyan"], ["cyan","cyan","cyan","cyan"], (4, 0)),
+    (["cyan","cyan","cyan","cyan"], ["pink","pink","pink","pink"], (0, 0)),
+    (["cyan","green","pink","orange"], ["green","cyan","orange","pink"], (0, 4)),
+    (["cyan","green","pink","orange"], ["green","green","green","purple"], (1, 0)),
+    (["cyan","cyan","pink","orange"], ["yellow","pink","green","purple"], (0, 1)),
+    (["cyan","green","pink","orange"], ["pink","green","orange","purple"], (1, 2)),
     (["purple","yellow","pink","purple"], ["yellow","green","pink","purple"], (2, 1)),
 ])
 def test_evaluate_guess(code, guess, expected_result):
@@ -64,3 +65,17 @@ def test_implement_settings(settings, pegs, col, eval):
     if game.settings["pegs"] != pegs:
         test = False
         assert test == eval, "Number of pegs dont match"
+
+
+def test_initial_guesses():
+    with patch('builtins.input', side_effect=["easy", "no", "cy pi gr or", "history", "quit"]), \
+         patch('builtins.print') as mock_print:
+
+        settings = get_settings()
+        game = MyMastermind(settings)
+        start_game(game)
+
+    # Show all print() output
+    for call in mock_print.call_args_list:
+        printed_output = ' '.join(str(arg) for arg in call[0])
+        print("PRINTED:", printed_output)
