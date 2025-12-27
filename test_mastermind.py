@@ -1,5 +1,5 @@
 import pytest
-from mastermind import MyMastermind, get_settings, start_game
+from mastermind import MyMastermind, get_settings, get_ui_config, start_game
 from unittest.mock import patch
 
 @pytest.mark.parametrize("code, guess, expected_result", [
@@ -11,7 +11,7 @@ from unittest.mock import patch
     (["cyan","green","pink","orange"], ["pink","green","orange","purple"], (1, 2)),
     (["purple","yellow","pink","purple"], ["yellow","green","pink","purple"], (2, 1)),
 ])
-def test_evaluate_guess(code, guess, expected_result):
+def test_evaluate_guess(code, guess, expected_result):   # tests code evaluation works correctly 
     game = MyMastermind()
     game.code = code
     evaluation = game.evaluate_guess(guess)
@@ -28,7 +28,7 @@ def test_evaluate_guess(code, guess, expected_result):
     (("expert", "no"), 6, 8, True),
     (("expert", "yes"), 6, 8, True),
 ])
-def test_generate_code(settings, pegs, col, eval):
+def test_generate_code(settings, pegs, col, eval):   # tests code is generated correctly
     game = MyMastermind(settings)
     code = game.code
     test = True
@@ -55,7 +55,7 @@ def test_generate_code(settings, pegs, col, eval):
     (("expert", "no"), 6, 8, True),
     (("expert", "yes"), 6, 8, True),
 ])
-def test_implement_settings(settings, pegs, col, eval): 
+def test_implement_settings(settings, pegs, col, eval):   # tests settings are implemented accordingly
     game = MyMastermind(settings)
     test = True
 
@@ -66,16 +66,15 @@ def test_implement_settings(settings, pegs, col, eval):
         test = False
         assert test == eval, "Number of pegs dont match"
 
+# """Simulates user"""
 
-def test_initial_guesses():
-    with patch('builtins.input', side_effect=["easy", "no", "cy pi gr or", "history", "quit"]), \
-         patch('builtins.print') as mock_print:
-
+# def test_simulate_user(capsys):   # mainly here so i dont have to write so much for my manual testing
+def test_simulate_user():   # mainly here so i dont have to write so much for my manual testing
+    with patch("builtins.input", side_effect=["easy","no","yes","gr ye pu or","cy pi pu or","history","quit"]):
         settings = get_settings()
+        ui_config = get_ui_config()
         game = MyMastermind(settings)
-        start_game(game)
+        start_game(game, ui_config)
 
-    # Show all print() output
-    for call in mock_print.call_args_list:
-        printed_output = ' '.join(str(arg) for arg in call[0])
-        print("PRINTED:", printed_output)
+    output = capsys.readouterr()
+    output.out
