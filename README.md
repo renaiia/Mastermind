@@ -31,7 +31,7 @@ white: 1 red: 2
 ## Testing 
 Unit tests are included using pytest.
 
-## Future improvements
+## Possible future improvements
 - Add a cap to number of turns
 - Ability to save and load games
 - Graphical user interface (GUI) version
