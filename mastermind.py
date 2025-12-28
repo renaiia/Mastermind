@@ -109,18 +109,17 @@ def run_game(game, ui_config):
     Args:
         game (MyMastermind): Instance of MyMastermind class.
     """
-    guess = " "
-        
-    while guess != game.code and guess[0] != "quit":   # runs the game
+    while True:   # runs the game
         guess = get_guess(game, ui_config) 
 
         if guess[0] == "history":   # shows the player their previous guesses
             ui_responses(game, "history", ui_config)
-            guess = get_guess(game, ui_config)
         elif guess[0] == "quit":   # enables the player to quit
             ui_responses(game, "quit", ui_config)
+            break
         elif guess == game.code:   # checks if the guess is correct
             ui_responses(game,"win", ui_config)
+            break
         else:
             pegs = game.evaluate_guess(guess)   # gets number of white and red pegs
             game.previous_guesses.append((guess, pegs))
@@ -129,15 +128,15 @@ def run_game(game, ui_config):
 """UI helpers"""
 
 abr_col = {
-        "pi": ("pink"),
-        "or": ("orange"),
-        "ye": ("yellow"),
-        "gr": ("green"),
-        "cy": ("cyan"),
-        "pu": ("purple"),
-        "wh": ("white"),
-        "bl": ("black"),
-        "re": ("red"),
+        "pi": "pink",
+        "or": "orange",
+        "ye": "yellow",
+        "gr": "green",
+        "cy": "cyan",
+        "pu": "purple",
+        "wh": "white",
+        "bl": "black",
+        "re": "red",
         }
 
 col_map = {
@@ -151,6 +150,8 @@ col_map = {
     "black": "1;30",
     "red": "1;31"
 }
+
+col_prev_guess = []
 
 def guess_decoder(game, guess):
     """Checks if guess is an abbreviation and decodes if it is.
@@ -168,7 +169,7 @@ def guess_decoder(game, guess):
                 decoded.append(g)
         else: 
             decoded.append(g)
-    
+
     return decoded
 
 """UI layer"""
@@ -183,22 +184,21 @@ def ui_responses(game, options, ui_config, red = None, white = None):
     """ 
     if options == "win":
         print (f"Correct! The code was: {add_colors(game.code, ui_config)}")
-        print (f"You did it in {len(game.previous_guesses)} attempts")
+        print (f"You did it in {len(game.previous_guesses)+1} attempts")
     elif options == "quit": 
         print (f"The code was: {add_colors(game.code, ui_config)}")
-    elif options == "eval":
-        col_red = add_colors(("red", "white"), ui_config)
-        print (f"{col_red[0]}:{red} {col_red[1]}:{white}")
-        return (f"{col_red[0]}:{red} {col_red[1]}:{white}")
     elif options == "colors":   # choose to not add colored text here
         print(f"Available colors: {', '.join(game.colors[:game.settings['colors']])}")
     elif options == "colors error":
         print(f"Guess must be {game.settings['pegs']} of these: {', '.join(game.colors)}")
+    elif options == "eval":
+        count = len (game.previous_guesses) - 1
+        guess_eval = f"Guess {count+1}: {add_colors((game.previous_guesses[count])[0], ui_config)} ⏐ {add_colors('red', ui_config)}: {game.previous_guesses[count][1][0]} {add_colors('white', ui_config)}: {(game.previous_guesses[count])[1][1]}"
+        col_prev_guess.append(guess_eval)
+        print (guess_eval)
     elif options == "history":
-        count = 0
-        for guess in game.previous_guesses:
-            count += 1
-            print (f"Guess {count}: {add_colors(guess[0], ui_config)} ⏐ {add_colors('red', ui_config)}: {guess[1][0]} {add_colors('white', ui_config)}: {guess[1][1]}")
+        for guess in col_prev_guess:
+            print (guess)
 
 def get_settings():   # sends to game logic
     """Asks for game difficulty and if duplicate colors are allowed. 
